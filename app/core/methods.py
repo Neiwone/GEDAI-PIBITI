@@ -1,5 +1,5 @@
 from pyDecision.algorithm import ahp_method, bw_method
-from app.models.weight_input import CalculateAHPWeightsDTO, CalculateBWMWeightsDTO
+from app.schemas.weight_input import CalculateAHPWeightsDTO, CalculateBWMWeightsDTO
 import numpy as np
 
 class BWM():
