@@ -1,5 +1,5 @@
 from pyDecision.algorithm import ahp_method, bw_method
-from app.schemas.weight_input import CalculateAHPWeightsDTO, CalculateBWMWeightsDTO
+from app.schemas.weight import CalculateAHPWeights, CalculateBWMWeights
 import numpy as np
 
 class BWM():
@@ -29,10 +29,10 @@ class AHP():
 
 
 
-def calculate_weights(request: CalculateAHPWeightsDTO | CalculateBWMWeightsDTO) -> list:
-    if type(request) == CalculateAHPWeightsDTO:
+def calculate_weights(request: CalculateAHPWeights | CalculateBWMWeights) -> list:
+    if type(request) == CalculateAHPWeights:
         return AHP(request.matrix).get_weight()
-    elif type(request) == CalculateBWMWeightsDTO:
+    elif type(request) == CalculateBWMWeights:
         return BWM(request.most_important, request.least_important).get_weight()
     else:
         raise ValueError(f'Unknown request type: {type(request)}')

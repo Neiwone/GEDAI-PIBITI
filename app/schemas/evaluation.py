@@ -1,20 +1,23 @@
-from typing import List
 from pydantic import BaseModel
-from app.schemas.alternative import Alternative, AlternativeCreate
-from app.schemas.criterion import Criterion, CriterionCreate
+from typing import Optional, List
+
+from app.schemas.alternative import AlternativeReadShort
+from app.schemas.criterion import CriterionCreate, CriterionReadShort
+
 
 class EvaluationBase(BaseModel):
     name: str
-    description: str | None = None
+    description: Optional[str] = None
+
 
 class EvaluationCreate(EvaluationBase):
-    alternatives: List[AlternativeCreate]
     criteria: List[CriterionCreate]
 
-class Evaluation(EvaluationBase):
+
+class EvaluationRead(EvaluationBase):
     id: int
-    alternatives: List[Alternative] = []
-    criteria: List[Criterion] = []
+    alternatives: List[AlternativeReadShort] = []
+    criteria: List[CriterionReadShort] = []
 
     class Config:
-        from_attributes = True
+        from_attributes=True

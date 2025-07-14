@@ -1,9 +1,7 @@
-from sqlalchemy import Column, Integer, String, Boolean, Text, Float, ForeignKey, DateTime
+from sqlalchemy import Column, Integer, String, Text, Float, ForeignKey, UniqueConstraint
 from sqlalchemy.orm import relationship
-from sqlalchemy.sql import func
 from app.db.database import Base
 
-# Modelo para Avaliações/Projetos
 class Evaluation(Base):
     __tablename__ = "evaluations"
 
@@ -13,9 +11,7 @@ class Evaluation(Base):
 
     alternatives = relationship("Alternative", back_populates="evaluation", cascade="all, delete-orphan")
     criteria = relationship("Criterion", back_populates="evaluation", cascade="all, delete-orphan")
-    submissions = relationship("EvaluationSubmission", back_populates="evaluation", cascade="all, delete-orphan")
 
-# Modelo para Alternativas
 class Alternative(Base):
     __tablename__ = "alternatives"
 
@@ -23,11 +19,11 @@ class Alternative(Base):
     title = Column(String, nullable=False)
     description = Column(Text)
     proposer = Column(String)
-    evaluation_id = Column(Integer, ForeignKey("evaluations.id"))
+    evaluation_id = Column(Integer, ForeignKey("evaluations.id"), nullable=False)
 
     evaluation = relationship("Evaluation", back_populates="alternatives")
+    notes = relationship("AlternativeCriterionNote", back_populates="alternative", cascade="all, delete-orphan")
 
-# Modelo para Critérios
 class Criterion(Base):
     __tablename__ = "criteria"
 
@@ -35,31 +31,19 @@ class Criterion(Base):
     name = Column(String, nullable=False)
     description = Column(Text)
     weight = Column(Float, nullable=True)
-    evaluation_id = Column(Integer, ForeignKey("evaluations.id"))
+    evaluation_id = Column(Integer, ForeignKey("evaluations.id"), nullable=False)
 
     evaluation = relationship("Evaluation", back_populates="criteria")
-    submission_scores = relationship("SubmissionScore", back_populates="criterion", cascade="all, delete-orphan")
+    notes = relationship("AlternativeCriterionNote", back_populates="criterion", cascade="all, delete-orphan")
 
-# Modelo para Submissões de Avaliação
-class EvaluationSubmission(Base):
-    __tablename__ = "evaluation_submissions"
-
-    id = Column(Integer, primary_key=True, index=True)
-    evaluation_id = Column(Integer, ForeignKey("evaluations.id"))
-    comments = Column(Text)
-    created_at = Column(DateTime, server_default=func.now())
-
-    evaluation = relationship("Evaluation", back_populates="submissions")
-    scores = relationship("SubmissionScore", back_populates="submission", cascade="all, delete-orphan")
-
-# Modelo para as Notas Individuais dentro de uma Submissão
-class SubmissionScore(Base):
-    __tablename__ = "submission_scores"
+class AlternativeCriterionNote(Base):
+    __tablename__ = "alternative_criterion_notes"
+    __table_args__ = (UniqueConstraint('alternative_id', 'criterion_id', name='uq_alternative_criterion'),)
 
     id = Column(Integer, primary_key=True, index=True)
-    submission_id = Column(Integer, ForeignKey("evaluation_submissions.id"))
-    criterion_id = Column(Integer, ForeignKey("criteria.id"))
-    score = Column(Float, nullable=False)
+    alternative_id = Column(Integer, ForeignKey("alternatives.id"), nullable=False)
+    criterion_id = Column(Integer, ForeignKey("criteria.id"), nullable=False)
+    note = Column(Float, nullable=False)
 
-    submission = relationship("EvaluationSubmission", back_populates="scores")
-    criterion = relationship("Criterion", back_populates="submission_scores")
+    alternative = relationship("Alternative", back_populates="notes")
+    criterion = relationship("Criterion", back_populates="notes")

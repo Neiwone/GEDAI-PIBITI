@@ -1,15 +1,27 @@
 from pydantic import BaseModel
+from typing import Optional
+
 
 class CriterionBase(BaseModel):
     name: str
-    description: str | None = None
+    description: Optional[str] = None
+    weight: Optional[float] = None
+
 
 class CriterionCreate(CriterionBase):
     pass
 
-class Criterion(CriterionBase):
+
+class CriterionRead(CriterionBase):
     id: int
-    weight: float | None = None
+    evaluation_id: int
 
     class Config:
-        from_attributes = True
+        from_attributes=True
+
+
+class CriterionReadShort(CriterionBase):
+    name: str
+
+    class Config:
+        from_attributes=True

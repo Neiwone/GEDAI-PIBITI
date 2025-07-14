@@ -1,7 +1,7 @@
 from pydantic import BaseModel, Field
 from typing import List
 
-class CalculateAHPWeightsDTO(BaseModel):
+class CalculateAHPWeights(BaseModel):
     criteria: List[str] = Field(default=["Cost", "Inovation", "Tecnology", "Management", "Market"])
     matrix: List[List[float]] = Field(
         default=[
@@ -12,7 +12,7 @@ class CalculateAHPWeightsDTO(BaseModel):
             [4, 3, 1/5, 4, 1]
             ])
 
-class CalculateBWMWeightsDTO(BaseModel):
+class CalculateBWMWeights(BaseModel):
     criteria: List[str] = Field(default=["Cost", "Inovation", "Tecnology", "Management", "Market"])
     most_important: List[float] = Field(default=[2, 1, 4, 3, 8])
     least_important: List[float] = Field(default=[4, 8, 2, 3, 1])
